@@ -52,7 +52,8 @@ const columns: ColumnDef<AcademicWork>[] = [
     id: "authors",
     header: "👥 Autores",
     cell: ({ row }) => {
-      const authors = row.original.authorships.map((a) => a.author.display_name).join(", ")
+      const rawAuthors = row?.original?.authorships.length > 2 ? row.original.authorships.slice(0, 2) : row.original.authorships
+      const authors = rawAuthors.map((a) => a.author.display_name).join(", ")
       return <span>{authors}</span>
     },
   },
