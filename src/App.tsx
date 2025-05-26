@@ -1,21 +1,42 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import type { AcademicWork } from "@/types"
 import InteractiveTable from "@/components/InteractiveTable"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
+import axios from "axios"
+
+const BASE_URL = "https://api.openalex.org/works"
+
+interface QueryParams {
+  per_page: number
+  page?: number
+  filter?: string
+  sort?: string
+}
 
 function App() {
   const [data, setData] = useState<AcademicWork[]>([])
   const [loading, setLoading] = useState(true)
+  const [params, setParams] = useState<QueryParams>({
+    per_page: 100,
+  })
+
+  const fetchData = useCallback(async (queryParams: QueryParams) => {
+    try {
+      const { data: responseData } = await axios.get(BASE_URL, {
+        params: queryParams
+      })
+      return responseData
+    } catch (error) {
+      console.error("Error fetching data:", error)
+      throw error
+    }
+  }, [])
 
   useEffect(() => {
-    const fetchData = async () => {
-      // const query = "https://api.openalex.org/works?filter=cited_by_count:100&per_page=100"
-      const query = "https://api.openalex.org/works?per_page=100"
+    const loadData = async () => {
       try {
-        const response = await fetch(query)
-        const jsonData = await response.json()
-        setData(jsonData.results)
-        console.log(jsonData.results)
+        const responseData = await fetchData(params)
+        setData(responseData.results)
       } catch (error) {
         console.error("Error fetching data:", error)
       } finally {
@@ -23,8 +44,8 @@ function App() {
       }
     }
 
-    fetchData()
-  }, [])
+    loadData()
+  }, [params, fetchData])
 
   const columns: ColumnDef<AcademicWork>[] = [
     {
