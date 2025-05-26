@@ -1,12 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-
-type AcademicWork = {
-  title: string
-  publication_year: number
-  cited_by_count: number
-  authorships: { author: { display_name: string } }[]
-}
+import type { AcademicWork } from "@/types"
 
 const data: AcademicWork[] = [
   {

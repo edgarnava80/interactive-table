@@ -6,8 +6,9 @@ import {
 } from "@tanstack/react-table"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import type { AcademicWork } from "@/types"
 
-const InteractiveTable = ({ data, columns }: { data: any[], columns: ColumnDef<any>[] }) => {
+const InteractiveTable = ({ data, columns }: { data: AcademicWork[], columns: ColumnDef<AcademicWork>[] }) => {
   const table = useReactTable({
     data,
     columns,
