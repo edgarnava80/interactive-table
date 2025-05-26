@@ -1,3 +1,4 @@
+import { type ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 
 type AcademicWork = {
@@ -34,6 +35,32 @@ const data: AcademicWork[] = [
       { author: { display_name: "Ethan Brown" } },
       { author: { display_name: "Moe Green" } },
     ],
+  },
+]
+
+const columns: ColumnDef<AcademicWork>[] = [
+  {
+    accessorKey: "title",
+    header: "📖 Título",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "publication_year",
+    header: "📅 Año",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "cited_by_count",
+    header: "🔢 Citaciones",
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: "authors",
+    header: "👥 Autores",
+    cell: ({ row }) => {
+      const authors = row.original.authorships.map((a) => a.author.display_name).join(", ")
+      return <span>{authors}</span>
+    },
   },
 ]
 
