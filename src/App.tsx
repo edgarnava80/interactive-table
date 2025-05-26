@@ -1,6 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
 import type { AcademicWork } from "@/types"
+import InteractiveTable from "@/components/InteractiveTable"
 
 const data: AcademicWork[] = [
   {
@@ -61,7 +61,7 @@ const columns: ColumnDef<AcademicWork>[] = [
 function App() {
   return (
     <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
+      <InteractiveTable data={data} columns={columns} />
     </div>
   )
 }
