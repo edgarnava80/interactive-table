@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { Card, CardContent } from "@/components/ui/card"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { Table, TableHeader, TableRow, TableHead } from "@/components/ui/table"
 import type { AcademicWork } from "@/types"
 import { useRef, useEffect } from "react"
 
@@ -39,7 +39,6 @@ const InteractiveTable = ({
     count: rows.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => 35,
-    overscan: 5,
   })
 
   useEffect(() => {
@@ -72,11 +71,12 @@ const InteractiveTable = ({
                     {headerGroup.headers.map((header) => (
                       <TableHead 
                         key={header.id}
+                        className="text-sm"
                         style={{
-                          width: header.id === "title" ? "60%" :
-                                 header.id === "publication_year" ? "5%" :
-                                 header.id === "cited_by_count" ? "9%" :
-                                 header.id === "authors" ? "26%" : "auto"
+                          width: header.id === "title" ? "59%" :
+                                 header.id === "publication_year" ? "8%" :
+                                 header.id === "cited_by_count" ? "10%" :
+                                 header.id === "authors" ? "23%" : "auto"
                         }}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -90,15 +90,27 @@ const InteractiveTable = ({
               ref={scrollContainerRef}
               className="overflow-auto max-h-[600px]"
             >
-              <Table className="border-collapse">
-                <TableBody>
-                  <tr>
-                    <td colSpan={columns.length} style={{ height: `${rowVirtualizer.getTotalSize()}px` }} />
-                  </tr>
+              <div 
+                style={{ 
+                  height: `${rowVirtualizer.getTotalSize()}px`,
+                  width: '100%',
+                  position: 'relative'
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    display: 'grid',
+                    gridTemplateColumns: '59% 8% 10% 23%',
+                  }}
+                >
                   {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const row = rows[virtualRow.index]
                     return (
-                      <TableRow
+                      <div
                         key={virtualRow.index}
                         data-index={virtualRow.index}
                         ref={virtualRow.index === rows.length - 1 ? (node) => {
@@ -113,36 +125,30 @@ const InteractiveTable = ({
                           width: '100%',
                           height: `${virtualRow.size}px`,
                           transform: `translateY(${virtualRow.start}px)`,
+                          display: 'grid',
+                          gridTemplateColumns: '59% 8% 10% 23%',
                         }}
                       >
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell 
+                          <div
                             key={cell.id}
-                            style={{
-                              width: cell.column.id === "title" ? "60%" :
-                                     cell.column.id === "publication_year" ? "5%" :
-                                     cell.column.id === "cited_by_count" ? "9%" :
-                                     cell.column.id === "authors" ? "26%" : "auto"
-                            }}
-                            className={`whitespace-normal break-words ${
+                            className={`p-4 text-sm ${
                               cell.column.id === "cited_by_count" ? "text-center" : ""
-                            }`}
+                            } whitespace-normal break-words`}
                           >
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
+                          </div>
                         ))}
-                      </TableRow>
+                      </div>
                     )
                   })}
-                  {loading && (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="text-center">
-                        Loading more...
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                </div>
+              </div>
+              {loading && (
+                <div className="text-center p-4 text-sm">
+                  Loading more...
+                </div>
+              )}
             </div>
             <div className="absolute top-0 left-0 right-0 bg-white z-10">
               <Table className="border-collapse">
@@ -152,11 +158,12 @@ const InteractiveTable = ({
                       {headerGroup.headers.map((header) => (
                         <TableHead 
                           key={header.id}
+                          className="text-sm"
                           style={{
-                            width: header.id === "title" ? "60%" :
-                                   header.id === "publication_year" ? "5%" :
-                                   header.id === "cited_by_count" ? "9%" :
-                                   header.id === "authors" ? "26%" : "auto"
+                            width: header.id === "title" ? "59%" :
+                                   header.id === "publication_year" ? "8%" :
+                                   header.id === "cited_by_count" ? "10%" :
+                                   header.id === "authors" ? "23%" : "auto"
                           }}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}

@@ -62,13 +62,20 @@ function App() {
     }
 
     loadInitialData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchData])
 
   const columns: ColumnDef<AcademicWork>[] = [
     {
       accessorKey: "title",
       header: "📖 Título",
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const title = info.getValue() as string
+        const trimmedTitle = title && title.trim()
+        if (!trimmedTitle) return null
+        const formattedTitle = trimmedTitle.charAt(0).toUpperCase() + trimmedTitle.slice(1).toLowerCase()
+        return formattedTitle.length > 100 ? `${formattedTitle.slice(0, 100)}...` : formattedTitle
+      },
     },
     {
       accessorKey: "publication_year",
@@ -88,7 +95,10 @@ function App() {
       header: "👥 Autores",
       cell: ({ row }) => {
         const rawAuthors = row?.original?.authorships.length > 2 ? row.original.authorships.slice(0, 2) : row.original.authorships
-        const authors = rawAuthors.map((a) => a.author.display_name).join(", ")
+        const authors = rawAuthors.map((a) => {
+          const name = a.author.display_name
+          return name.length > 20 ? `${name.slice(0, 20)}...` : name
+        }).join(", ")
         return <span>{authors}</span>
       },
     },
