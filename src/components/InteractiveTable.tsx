@@ -3,12 +3,13 @@ import {
   getCoreRowModel,
   flexRender,
   type ColumnDef,
+  type SortingState,
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead } from "@/components/ui/table"
 import type { AcademicWork } from "@/types"
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 
 interface InteractiveTableProps {
   data: AcademicWork[]
@@ -16,6 +17,7 @@ interface InteractiveTableProps {
   onLoadMore?: () => void
   hasMore?: boolean
   loading?: boolean
+  onSortingChange?: (sorting: SortingState) => void
 }
 
 const InteractiveTable = ({ 
@@ -23,14 +25,30 @@ const InteractiveTable = ({
   columns,
   onLoadMore,
   hasMore = false,
-  loading = false
+  loading = false,
+  onSortingChange
 }: InteractiveTableProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: (updatedSorting) => {
+      console.log('Table sorting update:', updatedSorting)
+      const newSorting = typeof updatedSorting === 'function' 
+        ? updatedSorting(sorting)
+        : updatedSorting
+      console.log('New sorting state:', newSorting)
+      setSorting(newSorting)
+      onSortingChange?.(newSorting)
+    },
+    state: {
+      sorting,
+    },
+    enableMultiSort: false,
+    enableSorting: true,
   })
 
   const { rows } = table.getRowModel()
@@ -71,15 +89,22 @@ const InteractiveTable = ({
                     {headerGroup.headers.map((header) => (
                       <TableHead 
                         key={header.id}
-                        className="text-sm"
+                        className="text-sm cursor-pointer hover:bg-gray-100"
                         style={{
-                          width: header.id === "title" ? "59%" :
-                                 header.id === "publication_year" ? "8%" :
-                                 header.id === "cited_by_count" ? "10%" :
+                          width: header.id === "title" ? "55%" :
+                                 header.id === "publication_year" ? "10%" :
+                                 header.id === "cited_by_count" ? "12%" :
                                  header.id === "authors" ? "23%" : "auto"
                         }}
+                        onClick={header.column.getToggleSortingHandler()}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        <div className="flex items-center gap-2">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: ' 🔼',
+                            desc: ' 🔽',
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>
@@ -104,7 +129,7 @@ const InteractiveTable = ({
                     left: 0,
                     width: '100%',
                     display: 'grid',
-                    gridTemplateColumns: '59% 8% 10% 23%',
+                    gridTemplateColumns: '55% 10% 12% 23%',
                   }}
                 >
                   {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -126,7 +151,7 @@ const InteractiveTable = ({
                           height: `${virtualRow.size}px`,
                           transform: `translateY(${virtualRow.start}px)`,
                           display: 'grid',
-                          gridTemplateColumns: '59% 8% 10% 23%',
+                          gridTemplateColumns: '55% 10% 12% 23%',
                         }}
                       >
                         {row.getVisibleCells().map((cell) => (
@@ -158,15 +183,22 @@ const InteractiveTable = ({
                       {headerGroup.headers.map((header) => (
                         <TableHead 
                           key={header.id}
-                          className="text-sm"
+                          className="text-sm cursor-pointer hover:bg-gray-100"
                           style={{
-                            width: header.id === "title" ? "59%" :
-                                   header.id === "publication_year" ? "8%" :
-                                   header.id === "cited_by_count" ? "10%" :
+                            width: header.id === "title" ? "55%" :
+                                   header.id === "publication_year" ? "10%" :
+                                   header.id === "cited_by_count" ? "12%" :
                                    header.id === "authors" ? "23%" : "auto"
                           }}
+                          onClick={header.column.getToggleSortingHandler()}
                         >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <div className="flex items-center gap-2">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {{
+                              asc: ' 🔼',
+                              desc: ' 🔽',
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
                         </TableHead>
                       ))}
                     </TableRow>
