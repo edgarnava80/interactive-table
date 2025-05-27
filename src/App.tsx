@@ -18,6 +18,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [params, setParams] = useState<QueryParams>({
     per_page: 100,
+    page: 5,
+    sort: "cited_by_count:desc",
   })
 
   const fetchData = useCallback(async (queryParams: QueryParams) => {
@@ -61,7 +63,10 @@ function App() {
     {
       accessorKey: "cited_by_count",
       header: "🔢 Citaciones",
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const value = info.getValue() as number
+        return value.toLocaleString()
+      },
     },
     {
       id: "authors",
@@ -79,7 +84,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
+    <div className="flex flex-col items-center justify-center min-h-svh px-4">
       <InteractiveTable data={data} columns={columns} />
     </div>
   )
