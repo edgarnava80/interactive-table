@@ -1,17 +1,10 @@
 import { type ColumnDef } from "@tanstack/react-table"
-import type { AcademicWork } from "@/types"
+import type { AcademicWork, QueryParams } from "@/types"
 import InteractiveTable from "@/components/InteractiveTable"
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
 
 const BASE_URL = "https://api.openalex.org/works"
-
-interface QueryParams {
-  per_page: number
-  page?: number
-  filter?: string
-  sort?: string
-}
 
 function App() {
   const [data, setData] = useState<AcademicWork[]>([])
